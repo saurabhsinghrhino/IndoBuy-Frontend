@@ -1,0 +1,14 @@
+@font-face {
+  font-family: Anton;
+  src: url("./assets//fonts//AntonSC-Regular.ttf");
+}
+@font-face {
+  font-family: Sekuya;
+  src: url("./assets//fonts/Sekuya-Regular.ttf");
+}
+@import "tailwindcss";
+
+@theme {
+  --font-anton: "Anton", sans-serif;
+  --font-sekuya: "Sekuya", sans-serif;
+}
