@@ -131,7 +131,7 @@ IndoBuy-Frontend/
 ```mermaid
 graph TD
 A[User Action] --> B[React Components]
-B --> C[Redux State]
+B --> C[Context-Based Routing]
 C --> D[Axios API Call]
 D --> E[Backend API]
 E --> F[MongoDB]

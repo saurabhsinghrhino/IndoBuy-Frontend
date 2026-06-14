@@ -60,7 +60,7 @@ const normalizeProducts = (apiData) => {
   return arr.map((item, i) => ({
     id: item._id || item.id || i + 1,
     name: item.name || item.title || item.productName || "Unnamed Product",
-    price: Number(item.price) || 0,
+    price: item.price || 0,
     originalPrice: Number(item.originalPrice) || 0,
     description: item.description || item.desc || "No description available",
     image: item.image || item.imageUrl || item.img || "📦",
@@ -81,6 +81,8 @@ const applyFiltersAndSort = (
 ) => {
   let result = [...products];
 
+  console.log(result.map((p) => p.price));
+
   // Text search across name, description, category
   if (searchQuery.trim()) {
     const q = searchQuery.toLowerCase();
@@ -99,7 +101,7 @@ const applyFiltersAndSort = (
 
   // Sort
   const sorters = {
-    "low-high": (a, b) => a.price - b.price,
+    "low-high": (a, b) => Number(a.price) - Number(b.price),
     "high-low": (a, b) => b.price - a.price,
     rating: (a, b) => b.rating - a.rating,
     newest: (a, b) => b.id - a.id,
@@ -140,7 +142,7 @@ const ProductsPage = () => {
       try {
         setLoading(true);
         const res = await getProducts();
-        const data = normalizeProducts(res.data);
+        const data = normalizeProducts(res.data.product);
         setProducts(data);
         setFilteredProducts(data);
       } catch (err) {
@@ -199,6 +201,12 @@ const ProductsPage = () => {
     addToCart(product, 1);
     navigate("/checkout");
   };
+
+  useEffect(() => {
+    products.map((item) => {
+      console.log(item);
+    });
+  }, []);
 
   const currentSortName = SORT_OPTIONS.find((s) => s.id === sortBy)?.name;
 
@@ -386,7 +394,9 @@ const ProductsPage = () => {
                               </p>
                             </div>
                             <button
-                              onClick={() => toggleWishlist(item.id)}
+                              onClick={() => {
+                                toggleWishlist(item.id);
+                              }}
                               className="p-1.5 rounded-full hover:bg-red-50 text-red-500"
                             >
                               <X className="w-4 h-4" />
