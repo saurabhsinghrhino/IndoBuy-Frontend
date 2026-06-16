@@ -486,6 +486,7 @@ const RegisterForm = ({ isLoading, setIsLoading, message, setMessage }) => {
           timeout: 10000,
         },
       );
+      console.log(response);
 
       localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("email", JSON.stringify(formData.email));

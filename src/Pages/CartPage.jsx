@@ -334,7 +334,12 @@ const CartPage = () => {
 
                 {/* Checkout Button */}
                 <button
-                  onClick={() => navigate("/checkout")}
+                  onClick={() =>
+                    navigate("/checkout", {
+                      amount: finalTotal,
+                      couponCode: "SAVE500",
+                    })
+                  }
                   className="w-full bg-black text-white py-4 rounded-full font-medium hover:scale-[1.02] transition-all flex items-center justify-center gap-2 mb-4"
                 >
                   Proceed to Checkout
