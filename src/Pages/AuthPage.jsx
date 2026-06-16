@@ -487,7 +487,7 @@ const RegisterForm = ({ isLoading, setIsLoading, message, setMessage }) => {
         },
       );
 
-      localStorage.setItem("user", JSON.stringify(formData.sername));
+      localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("email", JSON.stringify(formData.email));
       localStorage.setItem(
         "createdAt",
