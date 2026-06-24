@@ -81,8 +81,6 @@ const applyFiltersAndSort = (
 ) => {
   let result = [...products];
 
-  console.log(result.map((p) => p.price));
-
   // Text search across name, description, category
   if (searchQuery.trim()) {
     const q = searchQuery.toLowerCase();
