@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: "https://indobuy-backend.onrender.com/api",
 
   withCredentials: true, // VERY IMPORTANT 🔥 (for cookies)
 });
