@@ -487,10 +487,9 @@ const RegisterForm = ({ isLoading, setIsLoading, message, setMessage }) => {
       );
       console.log(response.data.user.token);
 
-      const cookie = document.cookie("token", response.data.user.token);
+      let cookie = document.cookie("token", response.data.user.token);
 
       localStorage.setItem("user", JSON.stringify(response.data.user));
-      localStorage.setItem("token", JSON.stringify(response.data.user.token));
       localStorage.setItem("email", JSON.stringify(formData.email));
       localStorage.setItem(
         "createdAt",
