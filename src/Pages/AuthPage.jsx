@@ -245,6 +245,7 @@ const LoginForm = ({ isLoading, setIsLoading, message, setMessage }) => {
       const token = response.data.user.token;
 
       console.log(response);
+      console.log(token);
       // Success response handling
       if (token) {
         setMessage({
@@ -486,7 +487,7 @@ const RegisterForm = ({ isLoading, setIsLoading, message, setMessage }) => {
           timeout: 10000,
         },
       );
-      console.log(response);
+      console.log(response.data.user.token);
 
       localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("token", JSON.stringify(response.data.user.token));
