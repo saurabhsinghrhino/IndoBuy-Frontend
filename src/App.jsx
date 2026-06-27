@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
+import { Analytics } from "@vercel/analytics/next";
 import Home from "./components/Home.jsx";
 import AuthPage from "./Pages/AuthPage.jsx";
 import LegalPage from "./Pages/LegalPage.jsx";
@@ -41,6 +42,7 @@ const App = () => {
           </div>
         </CartProvider>
       </BrowserRouter>
+      <Analytics />
     </div>
   );
 };
