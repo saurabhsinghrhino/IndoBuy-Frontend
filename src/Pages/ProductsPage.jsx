@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
@@ -21,6 +22,8 @@ import {
 import Navbar from "../components/Navbar";
 import { getProducts } from "../Services/productService";
 import { useCart } from "../context/CartContext"; // ← Global cart context
+import { addToCartFunc } from "../Services/cart.Service";
+import Notification from "../components/Notification";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -132,7 +135,7 @@ const ProductsPage = () => {
   const [wishlist, setWishlist] = useState([]);
 
   // Global cart from CartContext
-  const { cartCount, cartTotal, addToCart } = useCart();
+  const { cartCount } = useCart();
 
   // ── Fetch products once on mount ──────────────────────────────────────────
   useEffect(() => {
@@ -200,11 +203,7 @@ const ProductsPage = () => {
     navigate("/checkout");
   };
 
-  useEffect(() => {
-    products.map((item) => {
-      console.log(item);
-    });
-  }, []);
+  // const handleAddToCart = async () => {};
 
   const currentSortName = SORT_OPTIONS.find((s) => s.id === sortBy)?.name;
 
@@ -498,9 +497,9 @@ const ProductCard = ({ product, isWishlisted, onToggleWishlist, onBuyNow }) => {
   const [isAdding, setIsAdding] = useState(false);
 
   // Pull cart helpers from context
-  const { addToCart, isInCart, getItemQuantity } = useCart();
-  const inCart = isInCart(product.id);
-  const qty = getItemQuantity(product.id);
+  // const { addToCart, isInCart, getItemQuantity } = useCart();
+  // const inCart = isInCart(product.id);
+  // const qty = getItemQuantity(product.id);
 
   // GSAP hover lift animation
   useEffect(() => {
@@ -515,11 +514,22 @@ const ProductCard = ({ product, isWishlisted, onToggleWishlist, onBuyNow }) => {
 
   // Add to cart with brief loading state for UX feedback
   const handleAddToCart = async (e) => {
-    e.stopPropagation(); // Prevent card click → navigate
-    setIsAdding(true);
-    await new Promise((r) => setTimeout(r, 300));
-    addToCart(product, 1);
-    setIsAdding(false);
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await addToCartFunc(product.id, 1);
+
+      // Notification({
+      //   type: "success",
+      //   message: response.data.message || "Added to cart",
+      // });
+
+      e.stopPropagation(); // Prevent card click → navigate
+      await new Promise((r) => setTimeout(r, 300));
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || "Something went wrong");
+    }
   };
 
   const hasDiscount = product.originalPrice > product.price;
@@ -528,7 +538,6 @@ const ProductCard = ({ product, isWishlisted, onToggleWishlist, onBuyNow }) => {
     <div
       ref={cardRef}
       className="product-card bg-[#f0eeed] rounded-3xl overflow-hidden shadow-md shadow-gray-400 hover:shadow-xl transition-shadow duration-500 group cursor-pointer"
-      onClick={() => navigate(`/product/${product.id}`)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -539,11 +548,6 @@ const ProductCard = ({ product, isWishlisted, onToggleWishlist, onBuyNow }) => {
           {product.tag && (
             <span className="bg-black text-white px-3 py-1 rounded-full text-xs font-medium">
               {product.tag}
-            </span>
-          )}
-          {inCart && (
-            <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-              <ShoppingCart className="w-3 h-3" /> {qty} in cart
             </span>
           )}
         </div>
@@ -567,6 +571,7 @@ const ProductCard = ({ product, isWishlisted, onToggleWishlist, onBuyNow }) => {
         <div className="aspect-square flex items-center justify-center text-8xl group-hover:scale-110 transition-transform duration-500">
           {product.image?.startsWith("http") ? (
             <img
+              onClick={() => navigate(`/product/${product.id}`)}
               src={product.image}
               alt={product.name}
               className="w-full h-full object-contain rounded-2xl"
@@ -588,7 +593,7 @@ const ProductCard = ({ product, isWishlisted, onToggleWishlist, onBuyNow }) => {
             ) : (
               <ShoppingCart className="w-4 h-4" />
             )}
-            {inCart ? "Add More" : "Add to Cart"}
+            {/* {inCart ? "Add More" : "Add to Cart"} */}
           </button>
           <button
             onClick={(e) => {
@@ -658,7 +663,7 @@ const ProductCard = ({ product, isWishlisted, onToggleWishlist, onBuyNow }) => {
             ) : (
               <ShoppingCart className="w-4 h-4" />
             )}
-            {isAdding ? "..." : inCart ? "More" : "Add"}
+            {/* {isAdding ? "..." : "More" : "Add"} */}
           </button>
           <button
             onClick={(e) => {

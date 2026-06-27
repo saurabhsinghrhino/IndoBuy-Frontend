@@ -43,8 +43,6 @@ const ProductDetails = () => {
         setLoading(true);
         const response = await getProductById(id);
 
-        console.log("Product detail response:", response.data);
-
         // Map API data
         const item = response.data?.product || response.data;
         const mappedProduct = {

@@ -5,7 +5,7 @@ import { Menu, X, User, ShoppingCart, LogOut } from "lucide-react";
 import { useCart } from "../context/CartContext";
 
 const Navbar = () => {
-  const { cartCount } = useCart();
+  const { cartCount } = useCart();;
   const navbarRef = useRef(null);
   const navigate = useNavigate();
 

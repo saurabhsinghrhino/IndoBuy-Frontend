@@ -16,22 +16,26 @@ import {
   ChevronLeft,
   X,
 } from "lucide-react";
-import { useCart } from "../context/CartContext";
+import { CartProvider, useCart } from "../context/CartContext";
 import Navbar from "../components/Navbar";
+import { getCartFunc } from "../Services/cart.Service";
 
 const CartPage = () => {
   const navigate = useNavigate();
   const cartRef = useRef(null);
+  // const [cartItems, setCartList] = useState([]);/
+  const { cartItems, fetchCart, loading, error } = useCart();
 
-  const {
-    cartItems,
-    cartCount,
-    cartTotal,
-    updateQuantity,
-    removeFromCart,
-    clearCart,
-    moveToWishlist,
-  } = useCart();
+  useEffect(() => {
+    fetchCart;
+  }, []);
+
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  const cartTotal = cartItems.reduce(
+    (sum, item) => sum + Number(item.product.price) * item.quantity,
+    0,
+  );
 
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -60,7 +64,7 @@ const CartPage = () => {
     });
 
     return () => ctx.revert();
-  }, [cartItems]);
+  }, [cartItems.length]);
 
   // Apply promo code
   const applyPromo = () => {
@@ -103,6 +107,35 @@ const CartPage = () => {
     );
   }
 
+  // ── Loading screen ────────────────────────────────────────────────────────
+  if (loading)
+    return (
+      <div className="min-h-screen bg-[#fefeff] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-black animate-spin mx-auto mb-4" />
+          <p className="text-gray-600 font-medium">Loading products...</p>
+        </div>
+      </div>
+    );
+
+  // ── Error screen ──────────────────────────────────────────────────────────
+  if (error)
+    return (
+      <div className="min-h-screen bg-[#fefeff] flex items-center justify-center p-5">
+        <div className="bg-[#f0eeed] rounded-3xl p-12 shadow-lg shadow-gray-400 text-center max-w-md">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-black mb-3">Oops!</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-black text-white px-6 py-3 rounded-full font-medium hover:scale-105 transition-all"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+
   return (
     <div className="min-h-screen bg-[#fefeff]">
       <Navbar />
@@ -116,7 +149,8 @@ const CartPage = () => {
                 Shopping Cart
               </h1>
               <p className="text-gray-600 mt-1">
-                {cartCount} {cartCount === 1 ? "item" : "items"} in your cart
+                {cartItems.length} {cartItems.length === 1 ? "item" : "items"}{" "}
+                in your cart
               </p>
             </div>
             <button
@@ -148,23 +182,23 @@ const CartPage = () => {
                 <div className="space-y-4">
                   {cartItems.map((item) => (
                     <div
-                      key={item.id}
+                      key={item.product._id}
                       className="cart-item bg-white rounded-2xl p-4 flex gap-4 hover:shadow-md transition-shadow"
                     >
                       {/* Product Image */}
                       <div
-                        onClick={() => navigate(`/product/${item.id}`)}
+                        onClick={() => navigate(`/product/${item.product._id}`)}
                         className="w-24 h-24 bg-gray-50 rounded-xl overflow-hidden shrink-0 cursor-pointer"
                       >
-                        {item.image?.startsWith("http") ? (
+                        {item.product.image?.startsWith("http") ? (
                           <img
-                            src={item.image}
-                            alt={item.name}
+                            src={item.product.image}
+                            alt={item.product.name}
                             className="w-full h-full object-cover"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-4xl">
-                            {item.image || "📦"}
+                            {item.product.image || "📦"}
                           </div>
                         )}
                       </div>
@@ -174,17 +208,19 @@ const CartPage = () => {
                         <div className="flex justify-between items-start">
                           <div>
                             <h3
-                              onClick={() => navigate(`/product/${item.id}`)}
+                              onClick={() =>
+                                navigate(`/product/${item.product._id}`)
+                              }
                               className="font-bold text-black cursor-pointer hover:text-gray-700 transition-colors line-clamp-1"
                             >
-                              {item.name}
+                              {item.product.name}
                             </h3>
                             <p className="text-sm text-gray-500 mt-1">
-                              {item.category}
+                              {item.product.category}
                             </p>
                           </div>
                           <button
-                            onClick={() => removeFromCart(item.id)}
+                            onClick={() => removeFromCart(item.product._id)}
                             className="p-2 text-gray-400 hover:text-red-500 transition-colors"
                           >
                             <X className="w-5 h-5" />
@@ -196,7 +232,10 @@ const CartPage = () => {
                           <div className="flex items-center bg-[#f0eeed] rounded-full">
                             <button
                               onClick={() =>
-                                updateQuantity(item.id, item.quantity - 1)
+                                updateQuantity(
+                                  item.product._id,
+                                  item.quantity - 1,
+                                )
                               }
                               className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-l-full transition-colors"
                             >
@@ -207,7 +246,10 @@ const CartPage = () => {
                             </span>
                             <button
                               onClick={() =>
-                                updateQuantity(item.id, item.quantity + 1)
+                                updateQuantity(
+                                  item.product._id,
+                                  item.quantity + 1,
+                                )
                               }
                               className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-r-full transition-colors"
                             >
@@ -218,10 +260,13 @@ const CartPage = () => {
                           {/* Price */}
                           <div className="text-right">
                             <p className="font-bold text-black text-lg">
-                              ₹{(item.price * item.quantity).toLocaleString()}
+                              ₹
+                              {(
+                                item.product.price * item.quantity
+                              ).toLocaleString()}
                             </p>
                             <p className="text-sm text-gray-500">
-                              ₹{item.price.toLocaleString()} each
+                              ₹{item.product.price} each
                             </p>
                           </div>
                         </div>
