@@ -485,7 +485,7 @@ const RegisterForm = ({ isLoading, setIsLoading, message, setMessage }) => {
           timeout: 10000,
         },
       );
-      console.log(response.data.user.token);
+      console.log(response.data.user);
 
       const cookie = document.cookie("token", response.data.user.token);
 
