@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "../Services/authService";
+import axios from "axios";
 
 // ============================================
 // AUTH PAGE COMPONENT - Main container for Login/Register
@@ -234,8 +235,6 @@ const LoginForm = ({ isLoading, setIsLoading, message, setMessage }) => {
 
     // Clear any previous messages
     setMessage({ type: "", text: "" });
-    console.log(formData);
-
     try {
       // ============================================
       // AXIOS POST REQUEST - Send login data to backend
@@ -243,7 +242,20 @@ const LoginForm = ({ isLoading, setIsLoading, message, setMessage }) => {
       // In production, replace with your actual API endpoint
       console.log("Form Data:", formData);
 
-      const response = await loginUser(formData);
+      const response = await axios.post(
+        "https://indobuy-backend.onrender.com/api/auth/login",
+        {
+          email: formData.email,
+          password: formData.password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+          timeout: 10000,
+        },
+      );
 
       console.log("Response:", response);
       console.log("Response Data:", response.data);
