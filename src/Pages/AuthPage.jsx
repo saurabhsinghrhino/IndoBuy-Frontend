@@ -241,9 +241,12 @@ const LoginForm = ({ isLoading, setIsLoading, message, setMessage }) => {
       // AXIOS POST REQUEST - Send login data to backend
       // ============================================
       // In production, replace with your actual API endpoint
+      console.log("Form Data:", formData);
+
       const response = await loginUser(formData);
 
-      console.log(response);
+      console.log("Response:", response);
+      console.log("Response Data:", response.data);
 
       const token = response.data.user.token;
 
