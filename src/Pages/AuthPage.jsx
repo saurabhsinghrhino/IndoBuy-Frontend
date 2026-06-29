@@ -234,6 +234,7 @@ const LoginForm = ({ isLoading, setIsLoading, message, setMessage }) => {
 
     // Clear any previous messages
     setMessage({ type: "", text: "" });
+    console.log(formData);
 
     try {
       // ============================================
@@ -241,6 +242,8 @@ const LoginForm = ({ isLoading, setIsLoading, message, setMessage }) => {
       // ============================================
       // In production, replace with your actual API endpoint
       const response = await loginUser(formData);
+
+      console.log(response);
 
       const token = response.data.user.token;
 
@@ -486,8 +489,6 @@ const RegisterForm = ({ isLoading, setIsLoading, message, setMessage }) => {
         },
       );
       console.log(response.data.user.token);
-
-      let cookie = document.cookie("token", response.data.user.token);
 
       localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("email", JSON.stringify(formData.email));
