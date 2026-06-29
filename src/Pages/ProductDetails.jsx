@@ -62,7 +62,7 @@ const ProductDetails = () => {
         setProduct(mappedProduct);
       } catch (err) {
         console.error("Error fetching product:", err);
-        setError("Product not found or unavailable");
+        setError("Unauthorized access. Please log in.");
       } finally {
         setLoading(false);
       }
